@@ -1,0 +1,7 @@
+# remove the files not to be added
+
+/node_modules
+
+/dist
+
+.env
