@@ -26,11 +26,8 @@ const userImg =
 
   const stats = data?.stats!
 
-
   if (isError) 
     return <Navigate to={"/"} />
-
-
 
   return (
     <div className="admin-container">
@@ -49,7 +46,7 @@ const userImg =
           <WidgetItem
             percent={stats.changePercent.revenue}
             amount={true}
-            value={stats.count.revenue}
+            value={stats?.count?.revenue || 0}
             heading="Revenue"
             color="rgb(0, 115, 255)"
           />
