@@ -44,7 +44,8 @@ export const userAPI = createApi({
 export const getUser = async (id: string) =>{
     try 
     {
-        const {data}: {data: UserResponse} = await axios.get(`${import.meta.env.VITE_SERVER}/api/v1/user/${id}`)
+        // Timeout so a sleeping server can't hang the app forever
+        const {data}: {data: UserResponse} = await axios.get(`${import.meta.env.VITE_SERVER}/api/v1/user/${id}`, { timeout: 30000 })
         return data
     }
     catch (error)

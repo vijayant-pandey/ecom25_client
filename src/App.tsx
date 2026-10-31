@@ -2,7 +2,7 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import {lazy, Suspense, useEffect} from 'react'
 import Loader from "./components/loader"
 import Header from "./components/header"
-import { Toaster } from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "./firebase"
 import { userExist, userNotExist } from "./redux/reducer/userReducer"
@@ -61,12 +61,28 @@ const App = () => {
   const dispatch = useDispatch()
   useEffect(() => {
 
-    onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user)
       {
-        const data = await getUser(user.uid)
-        console.log("Logged In")
-        dispatch(userExist(data.user))
+        // Retry a few times - the Render server may be waking up from sleep (cold start)
+        for (let attempt = 1; attempt <= 3; attempt++)
+        {
+          try
+          {
+            const data = await getUser(user.uid)
+            console.log("Logged In")
+            dispatch(userExist(data.user))
+            return
+          }
+          catch (error)
+          {
+            console.log(`getUser attempt ${attempt} failed`, error)
+            if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 3000))
+          }
+        }
+        // Never leave the app stuck on the loader
+        dispatch(userNotExist())
+        toast.error("Could not load your account, please try again")
       }
       else
       {
@@ -74,6 +90,7 @@ const App = () => {
         console.log("Not Logged In")
       }
     })
+    return () => unsubscribe()
   }, [dispatch])
 
 
