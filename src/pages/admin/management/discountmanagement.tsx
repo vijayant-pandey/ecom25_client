@@ -10,6 +10,7 @@ import { Skeleton } from "../../../components/loader";
 import { RootState, server } from "../../../redux/store";
 import { SingleDiscountResponse } from "../../../types/api-types";
 
+
 const DiscountManagement = () => {
   const { user } = useSelector((state: RootState) => state.userReducer);
   const { id } = useParams();
@@ -21,7 +22,8 @@ const DiscountManagement = () => {
     error,
   } = useFetchData<SingleDiscountResponse>({
     url: `${server}/api/v1/payment/coupon/${id}?id=${user?._id}`,
-    key: "discount-code"
+    key: "discount-code",
+    dependencyProps: [id || 'defaultId'],
 });
 
   if (error) {

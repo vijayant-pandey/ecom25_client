@@ -48,7 +48,9 @@ const Discount = () => {
   } = useFetchData<AllDiscountResponse>({
     // `${server}/api/v1/payment/coupon/all?id=${user?._id}`,"discount-codes");
     url: `${server}/api/v1/payment/coupon/all?id=${user?._id}`,
-    key: "discount-codes",})
+    key: "discount-codes",
+    dependencyProps: [user?._id || 'defaultId'],
+  })
 
   const [rows, setRows] = useState<DataType[]>([]);
 
